@@ -32,14 +32,12 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.customId === 'ticket_select') {
 
-      console.log(interaction.values);
+      await interaction.deferReply({ ephemeral: true });
+
       const selected = interaction.values[0];
 
-      await interaction.reply({
-        content: `You selected: ${selected}`,
-        ephemeral: true
+      await interaction.editReply({
+        content: `You selected: ${selected}`
       });
     }
   }
-
-});
