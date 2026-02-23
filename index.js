@@ -5,7 +5,7 @@ const {
   GatewayIntentBits, 
   EmbedBuilder, 
   ActionRowBuilder, 
-  StringSelectMenuBuilder 
+  StringSelectMenuBuilder,
   PermissionsBitField,
   ChannelType
 } = require('discord.js');
@@ -58,7 +58,7 @@ client.on('interactionCreate', async interaction => {
 
     const channel = await interaction.guild.channels.create({
       name: `ticket-${selected}-${interaction.user.username}`,
-      type: 0, // GuildText
+      type: ChannelType.GuildText,
       permissionOverwrites: [
         {
           id: interaction.guild.id,
@@ -77,6 +77,6 @@ client.on('interactionCreate', async interaction => {
       content: `✅ Your ticket has been created: ${channel}`
     });
   }
-}
+});
 
 client.login(process.env.TOKEN);
