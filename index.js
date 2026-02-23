@@ -30,10 +30,16 @@ client.on('interactionCreate', async interaction => {
         .setCustomId('ticket_select')
         .setPlaceholder('📂 Select a support category')
         .addOptions(
-          { label: 'General Support', value: 'general', emoji: '🌸' },
-          { label: 'Discord Support', value: 'discord', emoji: '💬' }
-        );
-
+          const menu = new StringSelectMenuBuilder()
+        .addOptions(
+        { label: 'General Support', value: 'general', emoji: '🌸' },
+        { label: 'Discord Support', value: 'discord', emoji: '💬' },
+        { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
+        { label: 'Report MR/HR', value: 'mrhr', emoji: '🧁' },
+        { label: 'Bakery Assistance', value: 'bakery', emoji: '⚠️' },
+        { label: 'Corporate', value: 'corp', emoji: '🤝' },
+        { label: 'Presidential', value: 'pres', emoji: '👑' }
+  );
       const row = new ActionRowBuilder().addComponents(menu);
 
       await interaction.reply({
