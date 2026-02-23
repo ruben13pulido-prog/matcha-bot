@@ -1,64 +1,44 @@
-require('dotenv').config();
-
-const { 
-  Client, 
-  GatewayIntentBits, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  StringSelectMenuBuilder 
-} = require('discord.js');
-
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds
-  ]
-});
-
-client.once('ready', () => {
-  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
-});
-
 client.on('interactionCreate', async interaction => {
 
-  if (interaction.isStringSelectMenu()) {
-    
-   if (interaction.customId === 'ticket_select') {
-     await interaction.reply( {
-     content: 'You selected: ${interaction.values[0]}`,
-     ephemeral: true
-   });
+  // Slash command
+  if (interaction.isChatInputCommand()) {
+
+    if (interaction.commandName === 'panel') {
+
+      const embed = new EmbedBuilder()
+        .setColor('#ffb7c5')
+        .setTitle('🛟 Matcha Support')
+        .setDescription('Select a category below to create a support ticket.');
+
+      const menu = new StringSelectMenuBuilder()
+        .setCustomId('ticket_select')
+        .setPlaceholder('📂 Select a support category')
+        .addOptions(
+          { label: 'General Support', value: 'general', emoji: '🌸' },
+          { label: 'Discord Support', value: 'discord', emoji: '💬' }
+        );
+
+      const row = new ActionRowBuilder().addComponents(menu);
+
+      await interaction.reply({
+        embeds: [embed],
+        components: [row]
+      });
+    }
   }
-}
- 
-  console.log("Interaction received");
 
-    console.log("Panel command triggered");
+  // Select menu handler
+  else if (interaction.isStringSelectMenu()) {
 
-    const embed = new EmbedBuilder()
-      .setColor('#ffb7c5')
-      .setTitle('🛟 Matcha Support')
-      .setDescription('Select a category below to create a support ticket.');
+    if (interaction.customId === 'ticket_select') {
 
-    const menu = new StringSelectMenuBuilder()
-      .setCustomId('ticket_select')
-      .setPlaceholder('📂 Select a support category')
-      .addOptions(
-        { label: 'General Support', value: 'general', emoji: '🌸' },
-        { label: 'Discord Support', value: 'discord', emoji: '💬' },
-        { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
-        { label: 'Report MR/HR', value: 'mrhr', emoji: '🧁' },
-        { label: 'Bakery Assistance', value: 'bakery', emoji: '⚠️' },
-        { label: 'Communications', value: 'comms', emoji: '🤝' },
-        { label: 'Presidential', value: 'pres', emoji: '👑' }
-      );
+      const selected = interaction.values[0];
 
-    const row = new ActionRowBuilder().addComponents(menu);
-
-    await interaction.reply({
-      embeds: [embed],
-      components: [row]
-    });
+      await interaction.reply({
+        content: `You selected: ${selected}`,
+        ephemeral: true
+      });
+    }
   }
+
 });
-
-client.login(process.env.TOKEN); 
