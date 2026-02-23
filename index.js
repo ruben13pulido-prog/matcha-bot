@@ -30,8 +30,6 @@ client.on('interactionCreate', async interaction => {
         .setCustomId('ticket_select')
         .setPlaceholder('📂 Select a support category')
         .addOptions(
-          const menu = new StringSelectMenuBuilder()
-        .addOptions(
         { label: 'General Support', value: 'general', emoji: '🌸' },
         { label: 'Discord Support', value: 'discord', emoji: '💬' },
         { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
