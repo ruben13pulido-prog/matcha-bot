@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const {
   Client,
   GatewayIntentBits,
@@ -6,6 +8,12 @@ const {
   PermissionsBitField,
   ChannelType
 } = required('discord.js');
+
+const client = new Client({
+  intents: [GatewayIntentsBits.Guilds]
+});
+
+client.once('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 
@@ -38,52 +46,46 @@ client.on('interactionCreate', async interaction => {
       });
     }
   }
-else if (interaction.isStringSelectMenu()) {
-  if (interaction.customId === 'ticket_select') {
 
-    try {
-      await interaction.deferReply({ ephemeral: true });
+  else if (interaction.isStringSelectMenu()) {
+    if (interaction.customId === 'ticket_select') {
 
-      const selected = interaction.values[0];
+      try {
+        await interaction.deferReply({ ephemeral: true });
 
-      console.log("Creating ticket for:", selected);
+        const selected = interaction.values[0];
 
-      const channel = await interaction.guild.channels.create({
-        name: `ticket-${selected}-${interaction.user.username}`,
-        type: ChannelType.GuildText,
-        permissionOverwrites: [
-          {
-            id: interaction.guild.id,
-            deny: [PermissionsBitField.Flags.ViewChannel],
-          },
-          {
-            id: interaction.user.id,
-            allow: [
-              PermissionsBitField.Flags.ViewChannel,
-              PermissionsBitField.Flags.SendMessages,
-              PermissionsBitField.Flags.ReadMessageHistory
-            ],
-          }
-        ],
-      });
-
-      await channel.send(`🎫 Ticket created by ${interaction.user}`);
-
-      await interaction.editReply({
-        content: `✅ Your ticket has been created: ${channel}`
-      });
-
-    } catch (error) {
-      console.error("Ticket creation error:", error);
-
-      if (!interaction.replied) {
-        await interaction.reply({
-          content: "❌ Something went wrong creating your ticket.",
-          ephemeral: true
+        const channel = await interaction.guild.channels.create({
+          name: `ticket-${selected}-${interaction.user.username}`,
+          type: ChannelType.GuildText,
+          permissionOverwrites: [
+            {
+              id: interaction.guild.id,
+              deny: [PermissionsBitField.Flags.ViewChannel],
+            },
+            {
+              id: interaction.user.id,
+              allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages,
+                PermissionsBitField.Flags.ReadMessageHistory
+              ],
+            }
+          ],
         });
+
+        await channel.send(`🎫 Ticket created by ${interaction.user}`);
+
+        await interaction.editReply({
+          content: `✅ Your ticket has been created: ${channel}`
+        });
+
+      } catch (error) {
+        console.error(error);
       }
     }
   }
-}
+
+});
 
 client.login(process.env.TOKEN);
