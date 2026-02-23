@@ -34,9 +34,11 @@ client.on('interactionCreate', async interaction => {
     if (interaction.customId === 'ticket_select') {
 
       await interaction.deferReply({ ephemeral: true });
-
+      
       const selected = interaction.values[0];
 
+      console.log("Creating ticket for:", selected);
+      
       const channel = await interaction.guild.channels.create({
         name: `ticket-${selected}-${interaction.user.username}`,
         type: ChannelType.GuildText,
