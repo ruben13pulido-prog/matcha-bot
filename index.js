@@ -50,24 +50,28 @@ client.on('interactionCreate', async interaction => {
   }
 
  else if (interaction.isStringSelectMenu()) {
-   if (interaction.customId === 'ticket_select') {
+  if (interaction.customId === 'ticket_select') {
 
-     await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ ephemeral: true });
 
-     const selected = interaction.values[0];
+    const selected = interaction.values[0];
 
-     const channel = await interaction.guild.channels.create({
-       name: `ticket-${selected}-${interaction.user.username}`,
-       type: 0,
-       permissionOverwrites: [
-         {
-           id: interaction.user.id,
-           allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
-         }
-        ],
-     });
+    const channel = await interaction.guild.channels.create({
+      name: `ticket-${selected}-${interaction.user.username}`,
+      type: 0, // GuildText
+      permissionOverwrites: [
+        {
+          id: interaction.guild.id,
+          deny: ['ViewChannel'],
+        },
+        {
+          id: interaction.user.id,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        }
+      ],
+    });
 
-     await channel.send(`🎫 Ticket created by ${interaction.user}`);
+    await channel.send(`🎫 Ticket created by ${interaction.user}`);
 
     await interaction.editReply({
       content: `✅ Your ticket has been created: ${channel}`
