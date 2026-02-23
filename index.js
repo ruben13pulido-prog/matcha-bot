@@ -38,16 +38,16 @@ client.on('interactionCreate', async interaction => {
       });
     }
   }
+else if (interaction.isStringSelectMenu()) {
+  if (interaction.customId === 'ticket_select') {
 
-  else if (interaction.isStringSelectMenu()) {
-    if (interaction.customId === 'ticket_select') {
-
+    try {
       await interaction.deferReply({ ephemeral: true });
-      
+
       const selected = interaction.values[0];
 
       console.log("Creating ticket for:", selected);
-      
+
       const channel = await interaction.guild.channels.create({
         name: `ticket-${selected}-${interaction.user.username}`,
         type: ChannelType.GuildText,
@@ -72,9 +72,18 @@ client.on('interactionCreate', async interaction => {
       await interaction.editReply({
         content: `✅ Your ticket has been created: ${channel}`
       });
+
+    } catch (error) {
+      console.error("Ticket creation error:", error);
+
+      if (!interaction.replied) {
+        await interaction.reply({
+          content: "❌ Something went wrong creating your ticket.",
+          ephemeral: true
+        });
+      }
     }
   }
-
-});
+}
 
 client.login(process.env.TOKEN);
