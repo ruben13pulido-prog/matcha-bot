@@ -4,16 +4,19 @@ const {
   Client,
   GatewayIntentBits,
   EmbedBuilder,
+  ActionRowBuilder,
   StringSelectMenuBuilder,
   PermissionsBitField,
   ChannelType
-} = required('discord.js');
+} = require('discord.js');
 
 const client = new Client({
-  intents: [GatewayIntentsBits.Guilds]
+  intents: [GatewayIntentBits.Guilds]
 });
 
 client.once('ready', () => {
+  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
+});
 
 client.on('interactionCreate', async interaction => {
 
@@ -81,7 +84,7 @@ client.on('interactionCreate', async interaction => {
         });
 
       } catch (error) {
-        console.error(error);
+        console.error("Ticket error:", error);
       }
     }
   }
