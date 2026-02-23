@@ -1,3 +1,12 @@
+const {
+  Client,
+  GatewayIntentBits,
+  EmbedBuilder,
+  StringSelectMenuBuilder,
+  PermissionsBitField,
+  ChannelType
+} = required('discord.js');
+
 client.on('interactionCreate', async interaction => {
 
   if (interaction.isChatInputCommand()) {
