@@ -77,6 +77,6 @@ client.on('interactionCreate', async interaction => {
       content: `✅ Your ticket has been created: ${channel}`
     });
   }
-});
+}
 
 client.login(process.env.TOKEN);
