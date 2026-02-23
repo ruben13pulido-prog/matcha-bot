@@ -32,6 +32,7 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.customId === 'ticket_select') {
 
+      console.log(interaction.values);
       const selected = interaction.values[0];
 
       await interaction.reply({
