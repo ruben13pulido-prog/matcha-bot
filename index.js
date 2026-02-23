@@ -1,8 +1,24 @@
+require('dotenv').config();
+
+const { 
+  Client, 
+  GatewayIntentBits, 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  StringSelectMenuBuilder 
+} = require('discord.js');
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds]
+});
+
+client.once('ready', () => {
+  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
+});
+
 client.on('interactionCreate', async interaction => {
 
-  // Slash command
   if (interaction.isChatInputCommand()) {
-
     if (interaction.commandName === 'panel') {
 
       const embed = new EmbedBuilder()
@@ -27,9 +43,7 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
-  // Select menu handler
   else if (interaction.isStringSelectMenu()) {
-
     if (interaction.customId === 'ticket_select') {
 
       await interaction.deferReply({ ephemeral: true });
@@ -41,4 +55,7 @@ client.on('interactionCreate', async interaction => {
       });
     }
   }
+
 });
+
+client.login(process.env.TOKEN);
