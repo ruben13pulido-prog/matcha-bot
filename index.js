@@ -20,11 +20,17 @@ client.once('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 
+  if (interaction.isStringSelectMenu()) {
+    
+   if (interaction.customId === 'ticket_select') {
+     await interaction.reply( {
+     content: 'You selected: ${interaction.values[0]}`,
+     ephemeral: true
+   });
+  }
+}
+ 
   console.log("Interaction received");
-
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === 'panel') {
 
     console.log("Panel command triggered");
 
@@ -55,4 +61,4 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN); 
