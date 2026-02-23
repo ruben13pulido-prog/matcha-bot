@@ -1,91 +1,57 @@
-const express = require("express");
-const app = express();
-
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-  res.send("Matcha Support Bot is running.");
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
-
 require('dotenv').config();
 
 const { 
   Client, 
   GatewayIntentBits, 
-  ChannelType, 
-  PermissionsBitField,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  StringSelectMenuBuilder 
 } = require('discord.js');
 
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.Guilds
   ]
 });
 
-client.once('clientReady', () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
+client.once('ready', () => {
+  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
 });
 
-
-// PANEL COMMAND
-client.on('messageCreate', async message => {
-  if (message.content === '!panel') {
-
-    const button = new ButtonBuilder()
-      .setCustomId('create_ticket')
-      .setLabel('🎟 Create Ticket')
-      .setStyle(ButtonStyle.Primary);
-
-    const row = new ActionRowBuilder().addComponents(button);
-
-    await message.channel.send({
-      content: 'Click below to create a support ticket!',
-      components: [row]
-    });
-  }
-});
-
-
-// BUTTON CLICK HANDLER
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isButton()) return;
 
-  if (interaction.customId === 'create_ticket') {
+  console.log("Interaction received");
 
-    const channel = await interaction.guild.channels.create({
-      name: `ticket-${interaction.user.username}`,
-      type: ChannelType.GuildText,
-      permissionOverwrites: [
-        {
-          id: interaction.guild.id,
-          deny: [PermissionsBitField.Flags.ViewChannel],
-        },
-        {
-          id: interaction.user.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages
-          ],
-        }
-      ],
-    });
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'panel') {
+
+    console.log("Panel command triggered");
+
+    const embed = new EmbedBuilder()
+      .setColor('#ffb7c5')
+      .setTitle('🛟 Matcha Support')
+      .setDescription('Select a category below to create a support ticket.');
+
+    const menu = new StringSelectMenuBuilder()
+      .setCustomId('ticket_select')
+      .setPlaceholder('📂 Select a support category')
+      .addOptions(
+        { label: 'General Support', value: 'general', emoji: '🌸' },
+        { label: 'Discord Support', value: 'discord', emoji: '💬' },
+        { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
+        { label: 'Report MR/HR', value: 'mrhr', emoji: '🧁' },
+        { label: 'Bakery Assistance', value: 'bakery', emoji: '⚠️' },
+        { label: 'Communications', value: 'comms', emoji: '🤝' },
+        { label: 'Presidential', value: 'pres', emoji: '👑' }
+      );
+
+    const row = new ActionRowBuilder().addComponents(menu);
 
     await interaction.reply({
-      content: `Your ticket has been created: ${channel}`,
-      ephemeral: true
+      embeds: [embed],
+      components: [row]
     });
-
-    channel.send(`Welcome ${interaction.user}, please describe your issue.`);
   }
 });
 
