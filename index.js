@@ -1,25 +1,4 @@
-require('dotenv').config();
-
-const { 
-  Client, 
-  GatewayIntentBits, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  StringSelectMenuBuilder,
-  PermissionsBitField,
-  ChannelType
-} = require('discord.js');
-
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
-});
-
-client.once('ready', () => {
-  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
-});
-
 client.on('interactionCreate', async interaction => {
-
 
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === 'panel') {
@@ -33,14 +12,15 @@ client.on('interactionCreate', async interaction => {
         .setCustomId('ticket_select')
         .setPlaceholder('📂 Select a support category')
         .addOptions(
-        { label: 'General Support', value: 'general', emoji: '🌸' },
-        { label: 'Discord Support', value: 'discord', emoji: '💬' },
-        { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
-        { label: 'Report MR/HR', value: 'mrhr', emoji: '🧁' },
-        { label: 'Bakery Assistance', value: 'bakery', emoji: '⚠️' },
-        { label: 'Corporate', value: 'corp', emoji: '🤝' },
-        { label: 'Presidential', value: 'pres', emoji: '👑' }
-  );
+          { label: 'General Support', value: 'general', emoji: '🌸' },
+          { label: 'Discord Support', value: 'discord', emoji: '💬' },
+          { label: 'Report a Low Rank', value: 'lr', emoji: '🍰' },
+          { label: 'Report MR/HR', value: 'mrhr', emoji: '🧁' },
+          { label: 'Bakery Assistance', value: 'bakery', emoji: '⚠️' },
+          { label: 'Corporate', value: 'corp', emoji: '🤝' },
+          { label: 'Presidential', value: 'pres', emoji: '👑' }
+        );
+
       const row = new ActionRowBuilder().addComponents(menu);
 
       await interaction.reply({
@@ -50,34 +30,40 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
- else if (interaction.isStringSelectMenu()) {
-  if (interaction.customId === 'ticket_select') {
+  else if (interaction.isStringSelectMenu()) {
+    if (interaction.customId === 'ticket_select') {
 
-    await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: true });
 
-    const selected = interaction.values[0];
+      const selected = interaction.values[0];
 
-    const channel = await interaction.guild.channels.create({
-      name: `ticket-${selected}-${interaction.user.username}`,
-      type: ChannelType.GuildText,
-      permissionOverwrites: [
-        {
-          id: interaction.guild.id,
-          deny: ['ViewChannel'],
-        },
-        {
-          id: interaction.user.id,
-          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
-        }
-      ],
-    });
+      const channel = await interaction.guild.channels.create({
+        name: `ticket-${selected}-${interaction.user.username}`,
+        type: ChannelType.GuildText,
+        permissionOverwrites: [
+          {
+            id: interaction.guild.id,
+            deny: [PermissionsBitField.Flags.ViewChannel],
+          },
+          {
+            id: interaction.user.id,
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+              PermissionsBitField.Flags.ReadMessageHistory
+            ],
+          }
+        ],
+      });
 
-    await channel.send(`🎫 Ticket created by ${interaction.user}`);
+      await channel.send(`🎫 Ticket created by ${interaction.user}`);
 
-    await interaction.editReply({
-      content: `✅ Your ticket has been created: ${channel}`
-    });
+      await interaction.editReply({
+        content: `✅ Your ticket has been created: ${channel}`
+      });
+    }
   }
+
 });
 
 client.login(process.env.TOKEN);
