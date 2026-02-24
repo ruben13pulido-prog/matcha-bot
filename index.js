@@ -33,11 +33,13 @@ client.on('messageCreate', async (message) => {
       .setTitle("🍵 Matcha Support Center")
       .setDescription(
 `Need some help? We're here for you!
- Please carefully review the following information before submitting a support ticket.
 
- Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
+Please carefully review the following information before submitting a support ticket. 
 
- Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
+Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
+
+Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
+
       )
       .setColor("#b7f2c2")
       .setFooter({ text: "Matcha Support • We’re here to help 💚" });
