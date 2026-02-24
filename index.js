@@ -96,12 +96,26 @@ Please provide your organization name, your role, and a clear explanation of you
         .setStyle(ButtonStyle.Success)
     );
 
+    const row2 = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("appeal")
+        .setLabel("📄 Appeals")
+        .setStyle(ButtonStyle.Success)
+    );
+
+    await message.channel.send({
+      embeds: [embed],
+      components: [row, row2]
+    });
+  }
+}); 
     await message.channel.send({ embeds: [embed], components: [row] });
     }
 });
 
 // BUTTON HANDLER (CREATES TICKETS)
-client.on('interactionCreate', async (interaction) => {
+client.on("interactionCreate", async (interaction) => {
+
   if (!interaction.isButton()) return;
 
   const category = interaction.customId;
@@ -120,7 +134,10 @@ client.on('interactionCreate', async (interaction) => {
       },
       {
         id: user.id,
-        allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages
+        ]
       }
     ]
   });
@@ -130,22 +147,24 @@ client.on('interactionCreate', async (interaction) => {
     .setDescription(
 `Hello ${user},
 
-Thank you for opening a **${category}** ticket.
-A member of the Matcha Support Team will assist you shortly.
+You opened an **${category.toUpperCase()}** ticket.
 
 Please provide:
-• A detailed explanation of your issue
-• Any evidence or screenshots
-• Relevant usernames or links
+• Full explanation
+• Evidence/screenshots
+• Relevant usernames
 
-Remain respectful while communicating with staff.`
+A staff member will assist you shortly.`
     )
     .setColor("#b7f2c2");
 
-  await ticketChannel.send({ content: `${user}`, embeds: [ticketEmbed] });
+  await ticketChannel.send({
+    content: `${user}`,
+    embeds: [ticketEmbed]
+  });
 
   await interaction.reply({
-    content: `✅ Your ticket has been created: ${ticketChannel}`,
+    content: `✅ Ticket created: ${ticketChannel}`,
     ephemeral: true
   });
 });
