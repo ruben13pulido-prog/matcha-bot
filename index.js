@@ -79,7 +79,7 @@ Appeal punishments or moderation actions.
 const row1 = new ActionRowBuilder().addComponents(
 new ButtonBuilder()
 .setCustomId("general")
-.setLabel("<:Mcupcake:1475669775865876583> General Support")
+.setLabel("General Support")
 .setStyle(ButtonStyle.Primary),
 
 new ButtonBuilder()
@@ -89,17 +89,17 @@ new ButtonBuilder()
 
 new ButtonBuilder()
 .setCustomId("lr")
-.setLabel("<:Mcupcake:1475669775865876583> Report LR")
+.setLabel("Report LR")
 .setStyle(ButtonStyle.Danger),
 
 new ButtonBuilder()
 .setCustomId("mrhr")
-.setLabel("<:Mcupcake:1475669775865876583> Report MR/HR")
+.setLabel("Report MR/HR")
 .setStyle(ButtonStyle.Danger),
 
 new ButtonBuilder()
 .setCustomId("corporate")
-.setLabel("<:Mcupcake:1475669775865876583> Corporate")
+.setLabel("Corporate")
 .setStyle(ButtonStyle.Success)
 );
 
