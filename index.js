@@ -167,7 +167,7 @@ A staff member will assist you shortly.`
     content: `✅ Ticket created: ${ticketChannel}`,
     ephemeral: true
   });
-});
+}
 
 // LOGIN (PASTE YOUR BOT TOKEN HERE)
 client.login(process.env.TOKEN);
