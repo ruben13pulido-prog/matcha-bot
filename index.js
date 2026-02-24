@@ -62,18 +62,18 @@ Questions relating to Matcha information.
 💬 **Discord Support**
 Issues regarding server violations.
 
-🧁 **Report an LR**
-Report Low Rank staff.
+:Mcupcake: **Report an LR**
+Submit reports against Low Rank staff.
 
-🧁 **Report MR/HR**
+:M3cupcake: **Report MR/HR**
 HR-only visible reports.
 
 ⚠️ **Bakery Assistance**
-Low: trolling/spam
-Middle: impersonation/exploits
-High: hacked/server down
+Low: trolling / spam  
+Middle: impersonation / exploits  
+High: hacked accounts / server down
 
-🌿 **Corporate**
+:M2cupcake: **Corporate**
 Partnership & affiliation inquiries.
 
 📄 **Appeals**
