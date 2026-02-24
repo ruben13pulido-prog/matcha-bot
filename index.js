@@ -71,7 +71,7 @@ Visible only to Human Resources.
 ⚠️ **Bakery Assistance**
 Low Response: trolling, spam, harassment
 Middle Response: impersonation, exploits, raids
-High Response: hacked accounts, bakery down
+High Response: hacked accounts, bakery server down, raids
 
 <:Mcupcake:1475669775865876583> **Corporate**
 Alliance & partnership inquiries.
