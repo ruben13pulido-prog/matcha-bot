@@ -63,10 +63,11 @@ Questions relating to Matcha information and knowledge.
 Report rule violations or Discord-related issues.
 
 <:Mcupcake:1475669775865876583> **Report an LR**
-Submit reports against Low Rank staff members.
+Submit reports against Low Rank staff members. This category is used to make a report against a (MatchaApprentice-BakerySupervisor).
 
 <:Mcupcake:1475669775865876583> **Report MR/HR**
-Visible only to Human Resources.
+Submit reports against Middle/High Rank staff members. This category is used to make a report against a Middle Rank or High Rank (Intern-HeadOfOperations)
+MR/HR reports can be seen by the Human Resource Department.
 
 ⚠️ **Bakery Assistance**
 Low Response: trolling, spam, harassment
