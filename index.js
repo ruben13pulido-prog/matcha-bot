@@ -32,7 +32,7 @@ client.on('messageCreate', async (message) => {
 if (message.content !== "!supportpanel") return;
 
 const embed = new EmbedBuilder()
-.setTitle("🍵 Matcha Support")
+.setTitle("<:Mcupcake:1475669775865876583> Matcha Support")
 .setDescription(`
 Need some help? We're here!
 
@@ -56,10 +56,10 @@ Questions relating to Matcha information and knowledge.
 💬 **Discord Support**
 Report rule violations or Discord-related issues.
 
-<:Mcupcake:1475677246806294559> **Report an LR**
+<:Mcupcake:1475669775865876583> **Report an LR**
 Submit reports against Low Rank staff members.
 
-<:Mcupcake:1475677246806294559> **Report MR/HR**
+<:Mcupcake:1475669775865876583> **Report MR/HR**
 Visible only to Human Resources.
 
 ⚠️ **Bakery Assistance**
@@ -67,7 +67,7 @@ Low Response: trolling, spam, harassment
 Middle Response: impersonation, exploits, raids
 High Response: hacked accounts, bakery down
 
-<:Mcupcake:1475677246806294559> **Corporate**
+<:Mcupcake:1475669775865876583> **Corporate**
 Alliance & partnership inquiries.
 
 📄 **Appeals**
