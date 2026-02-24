@@ -1,156 +1,241 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  PermissionsBitField
-} = require('discord.js');
+Client,
+GatewayIntentBits,
+EmbedBuilder,
+ActionRowBuilder,
+ButtonBuilder,
+ButtonStyle,
+ChannelType,
+PermissionsBitField
+} = require("discord.js");
+
+const fs = require("fs");
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+intents:[
+GatewayIntentBits.Guilds,
+GatewayIntentBits.GuildMessages,
+GatewayIntentBits.MessageContent
+]
 });
 
-client.once('ready', () => {
-  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
+
+// ================= READY =================
+client.once("ready",()=>{
+console.log(`✅ Matcha Corporate System Online`);
 });
 
 
 // ================= SUPPORT PANEL =================
-client.on('messageCreate', async (message) => {
+client.on("messageCreate", async message => {
 
-  if (message.content === "!supportpanel") {
+if(message.author.bot) return;
 
-    const embed = new EmbedBuilder()
-      .setTitle("🍵 Matcha Support Center")
-      .setDescription(
-`Need some help? We're here for you!
+if(message.content === "!supportpanel"){
 
-Please carefully review the following information before submitting a support ticket.
+const embed = new EmbedBuilder()
+.setTitle("🍵 Matcha Support Center")
+.setDescription(
+`Select a category below to open a support ticket.
+
+Please carefully review the following information before submitting a support ticket. 
 
 Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
 
-Once you select a category and open a ticket, a member of our team will respond as soon as possible.
+Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
 
-Please be prepared to provide information and evidence.`
-      )
-      .setColor("#b7f2c2")
-      .setFooter({ text: "Matcha Support • We’re here to help 💚" });
+Abuse of tickets may result in punishment.`
+)
+.setColor("#b7f2c2");
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('general')
-        .setLabel('🌸 General Support')
-        .setStyle(ButtonStyle.Primary),
+const row = new ActionRowBuilder().addComponents(
 
-      new ButtonBuilder()
-        .setCustomId('discord')
-        .setLabel('💬 Discord Support')
-        .setStyle(ButtonStyle.Secondary),
+new ButtonBuilder()
+.setCustomId("general")
+.setLabel("🌸 General")
+.setStyle(ButtonStyle.Primary),
 
-      new ButtonBuilder()
-        .setCustomId('lr')
-        .setLabel('🧁 Report LR')
-        .setStyle(ButtonStyle.Danger),
+new ButtonBuilder()
+.setCustomId("discord")
+.setLabel("💬 Discord")
+.setStyle(ButtonStyle.Secondary),
 
-      new ButtonBuilder()
-        .setCustomId('mrhr')
-        .setLabel('🧁 Report MR/HR')
-        .setStyle(ButtonStyle.Danger),
+new ButtonBuilder()
+.setCustomId("lr")
+.setLabel("🧁 Report LR")
+.setStyle(ButtonStyle.Danger),
 
-      new ButtonBuilder()
-        .setCustomId('corporate')
-        .setLabel('🌿 Corporate')
-        .setStyle(ButtonStyle.Success)
-    );
+new ButtonBuilder()
+.setCustomId("mrhr")
+.setLabel("🧁 Report MR/HR")
+.setStyle(ButtonStyle.Danger),
 
-    const row2 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('appeal')
-        .setLabel('📄 Appeals')
-        .setStyle(ButtonStyle.Success)
-    );
+new ButtonBuilder()
+.setCustomId("appeal")
+.setLabel("📄 Appeals")
+.setStyle(ButtonStyle.Success)
+);
 
-    await message.channel.send({
-      embeds: [embed],
-      components: [row, row2]
-    });
-  }
+await message.channel.send({
+embeds:[embed],
+components:[row]
+});
+}
 });
 
 
-// ================= TICKET CREATION =================
-client.on("interactionCreate", async (interaction) => {
+// ================= BUTTON SYSTEM =================
+client.on("interactionCreate", async interaction=>{
 
-  if (!interaction.isButton()) return;
+if(!interaction.isButton()) return;
 
-  const user = interaction.user;
-  const guild = interaction.guild;
-  const category = interaction.customId;
+const guild = interaction.guild;
+const user = interaction.user;
 
-  // ✅ Prevent duplicate tickets
-  const existing = guild.channels.cache.find(
-    c => c.name === `ticket-${user.username.toLowerCase()}`
-  );
+const staffRole =
+guild.roles.cache.find(r=>r.name==="Support Team");
 
-  if (existing) {
-    return interaction.reply({
-      content: `⚠️ You already have an open ticket: ${existing}`,
-      ephemeral: true
-    });
-  }
+const ticketCategory =
+guild.channels.cache.find(
+c=>c.name==="🎫 SUPPORT TICKETS"
+);
 
-  const ticketChannel = await guild.channels.create({
-    name: `ticket-${user.username}`,
-    type: ChannelType.GuildText,
-    permissionOverwrites: [
-      {
-        id: guild.id,
-        deny: [PermissionsBitField.Flags.ViewChannel]
-      },
-      {
-        id: user.id,
-        allow: [
-          PermissionsBitField.Flags.ViewChannel,
-          PermissionsBitField.Flags.SendMessages
-        ]
-      }
-    ]
-  });
+const logChannel =
+guild.channels.cache.find(
+c=>c.name==="ticket-logs"
+);
 
-  const ticketEmbed = new EmbedBuilder()
-    .setTitle("🎫 Support Ticket Created")
-    .setDescription(
-`Hello ${user},
 
-You opened a **${category.toUpperCase()}** ticket.
+// ========= CREATE TICKET =========
+if(
+["general","discord","lr","mrhr","appeal"]
+.includes(interaction.customId)
+){
 
-Please provide:
-• Full explanation
-• Evidence / screenshots
-• Relevant usernames
+// Anti spam
+const existing =
+guild.channels.cache.find(
+c=>c.name===`ticket-${user.id}`
+);
 
-A staff member will assist you shortly.`
-    )
-    .setColor("#b7f2c2");
+if(existing){
+return interaction.reply({
+content:`⚠️ You already have a ticket: ${existing}`,
+ephemeral:true
+});
+}
 
-  await ticketChannel.send({
-    content: `${user}`,
-    embeds: [ticketEmbed]
-  });
+const channel = await guild.channels.create({
+name:`ticket-${user.id}`,
+type:ChannelType.GuildText,
+parent:ticketCategory,
+permissionOverwrites:[
+{
+id:guild.id,
+deny:[PermissionsBitField.Flags.ViewChannel]
+},
+{
+id:user.id,
+allow:[
+PermissionsBitField.Flags.ViewChannel,
+PermissionsBitField.Flags.SendMessages
+]
+},
+{
+id:staffRole.id,
+allow:[
+PermissionsBitField.Flags.ViewChannel,
+PermissionsBitField.Flags.SendMessages
+]
+}
+]
+});
 
-  await interaction.reply({
-    content: `✅ Your ticket has been created: ${ticketChannel}`,
-    ephemeral: true
-  });
+const controls = new ActionRowBuilder().addComponents(
+
+new ButtonBuilder()
+.setCustomId("claim")
+.setLabel("✅ Claim")
+.setStyle(ButtonStyle.Success),
+
+new ButtonBuilder()
+.setCustomId("close")
+.setLabel("🔒 Close")
+.setStyle(ButtonStyle.Danger)
+);
+
+await channel.send({
+content:`${user}`,
+embeds:[
+new EmbedBuilder()
+.setTitle("🎫 Ticket Opened")
+.setDescription(
+`Category: **${interaction.customId.toUpperCase()}**
+
+Please explain your issue.
+Staff will assist shortly.`
+)
+.setColor("#b7f2c2")
+],
+components:[controls]
+});
+
+interaction.reply({
+content:`✅ Ticket created: ${channel}`,
+ephemeral:true
+});
+}
+
+
+// ========= CLAIM =========
+if(interaction.customId==="claim"){
+
+interaction.channel.send(
+`✅ ${interaction.user} has claimed this ticket.`
+);
+
+interaction.reply({
+content:"Ticket claimed.",
+ephemeral:true
+});
+}
+
+
+// ========= CLOSE =========
+if(interaction.customId==="close"){
+
+await interaction.reply({
+content:"🔒 Closing ticket...",
+ephemeral:true
+});
+
+// transcript
+const messages =
+await interaction.channel.messages.fetch({limit:100});
+
+let transcript = "";
+
+messages.reverse().forEach(m=>{
+transcript += `${m.author.tag}: ${m.content}\n`;
+});
+
+const file =
+`transcript-${interaction.channel.name}.txt`;
+
+fs.writeFileSync(file,transcript);
+
+await logChannel.send({
+content:`📁 Ticket Closed by ${interaction.user}`,
+files:[file]
+});
+
+setTimeout(()=>{
+interaction.channel.delete();
+},3000);
+}
+
 });
 
 
