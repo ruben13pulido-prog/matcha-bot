@@ -1,147 +1,247 @@
 require('dotenv').config();
 
 const {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  PermissionsBitField
+Client,
+GatewayIntentBits,
+EmbedBuilder,
+ActionRowBuilder,
+ButtonBuilder,
+ButtonStyle,
+ChannelType,
+PermissionsBitField
 } = require('discord.js');
 
+const fs = require("fs");
+
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+intents: [
+GatewayIntentBits.Guilds,
+GatewayIntentBits.GuildMessages,
+GatewayIntentBits.MessageContent
+]
 });
 
-client.once('ready', () => {
-  console.log(`✅ Matcha Support is online as ${client.user.tag}`);
+const STAFF_ROLE = "PASTE_STAFF_ROLE_ID";
+const TICKET_CATEGORY = "🍵 Matcha Tickets";
+const LOG_CATEGORY = "📁 Matcha Logs";
+
+const activeTickets = new Set();
+
+client.once("ready", () => {
+console.log(`✅ Matcha Support Online: ${client.user.tag}`);
 });
 
 
 // ================= SUPPORT PANEL =================
-client.on('messageCreate', async (message) => {
+client.on("messageCreate", async message => {
 
-  if (message.content === "!supportpanel") {
+if (message.content !== "!supportpanel") return;
 
-    const embed = new EmbedBuilder()
-      .setTitle("🍵 Matcha Support Center")
-      .setDescription(
-`Need some help? We're here for you!
+const embed1 = new EmbedBuilder()
+.setTitle("🍵 Matcha Support")
+.setDescription(`
+Need some help? We're here!
 
-Please carefully review the following information before submitting a support ticket. 
+Please only submit tickets if you intend to fully cooperate with staff.
+Once you select a category and create a ticket, a member of our support team will assist you shortly.
 
 Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
-
 Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
-
 Abuse of tickets may result in punishment.`
 
-      )
-      .setColor("#b7f2c2")
-      .setFooter({ text: "Matcha Support • We’re here to help 💚" });
+`)
+.setThumbnail(client.user.displayAvatarURL())
+.setColor("#b7f2c2");
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('general')
-        .setLabel('🌸 General Support')
-        .setStyle(ButtonStyle.Primary),
+const embed2 = new EmbedBuilder()
+.setTitle("Support Categories")
+.setDescription(`
+🌸 **General Support**
+Questions relating to Matcha information.
 
-      new ButtonBuilder()
-        .setCustomId('discord')
-        .setLabel('💬 Discord Support')
-        .setStyle(ButtonStyle.Secondary),
+💬 **Discord Support**
+Issues regarding server violations.
 
-      new ButtonBuilder()
-        .setCustomId('lr')
-        .setLabel('🧁 Report LR')
-        .setStyle(ButtonStyle.Danger),
+🧁 **Report an LR**
+Report Low Rank staff.
 
-      new ButtonBuilder()
-        .setCustomId('mrhr')
-        .setLabel('🧁 Report MR/HR')
-        .setStyle(ButtonStyle.Danger),
+🧁 **Report MR/HR**
+HR-only visible reports.
 
-      new ButtonBuilder()
-        .setCustomId('corporate')
-        .setLabel('🌿 Corporate')
-        .setStyle(ButtonStyle.Success)
-    );
+⚠️ **Bakery Assistance**
+Low: trolling/spam
+Middle: impersonation/exploits
+High: hacked/server down
 
-    const row2 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('appeal')
-        .setLabel('📄 Appeals')
-        .setStyle(ButtonStyle.Success)
-    );
+🌿 **Corporate**
+Partnership & affiliation inquiries.
 
-    await message.channel.send({
-      embeds: [embed],
-      components: [row, row2]
-    });
-  }
+📄 **Appeals**
+Punishment appeals.
+`)
+.setColor("#b7f2c2");
+
+const row1 = new ActionRowBuilder().addComponents(
+new ButtonBuilder().setCustomId("general").setLabel("General").setStyle(ButtonStyle.Primary),
+new ButtonBuilder().setCustomId("discord").setLabel("Discord").setStyle(ButtonStyle.Secondary),
+new ButtonBuilder().setCustomId("lr").setLabel("Report LR").setStyle(ButtonStyle.Danger),
+new ButtonBuilder().setCustomId("mrhr").setLabel("Report MR/HR").setStyle(ButtonStyle.Danger),
+);
+
+const row2 = new ActionRowBuilder().addComponents(
+new ButtonBuilder().setCustomId("corporate").setLabel("Corporate").setStyle(ButtonStyle.Success),
+new ButtonBuilder().setCustomId("appeal").setLabel("Appeals").setStyle(ButtonStyle.Success)
+);
+
+await message.channel.send({
+embeds: [embed1, embed2],
+components: [row1, row2]
+});
+
 });
 
 
-// ================= TICKET CREATION =================
-client.on("interactionCreate", async (interaction) => {
+// ================= TICKET SYSTEM =================
+client.on("interactionCreate", async interaction => {
 
-  if (!interaction.isButton()) return;
+if (!interaction.isButton()) return;
 
-  const category = interaction.customId;
-  const user = interaction.user;
-  const guild = interaction.guild;
+const guild = interaction.guild;
+const user = interaction.user;
 
-  const channelName = `ticket-${user.username}`.toLowerCase();
+if (activeTickets.has(user.id))
+return interaction.reply({
+content:"❌ You already have an open ticket.",
+ephemeral:true
+});
 
-  const ticketChannel = await guild.channels.create({
-    name: channelName,
-    type: ChannelType.GuildText,
-    permissionOverwrites: [
-      {
-        id: guild.id,
-        deny: [PermissionsBitField.Flags.ViewChannel]
-      },
-      {
-        id: user.id,
-        allow: [
-          PermissionsBitField.Flags.ViewChannel,
-          PermissionsBitField.Flags.SendMessages
-        ]
-      }
-    ]
-  });
+activeTickets.add(user.id);
 
-  const ticketEmbed = new EmbedBuilder()
-    .setTitle("🎫 Support Ticket Created")
-    .setDescription(
-`Hello ${user},
+const category =
+guild.channels.cache.find(
+c => c.name === TICKET_CATEGORY
+);
 
-You opened a **${category.toUpperCase()}** ticket.
+const channel = await guild.channels.create({
+name:`ticket-${user.username}`,
+type:ChannelType.GuildText,
+parent:category,
+permissionOverwrites:[
+{
+id:guild.id,
+deny:[PermissionsBitField.Flags.ViewChannel]
+},
+{
+id:user.id,
+allow:[
+PermissionsBitField.Flags.ViewChannel,
+PermissionsBitField.Flags.SendMessages
+]
+},
+{
+id:STAFF_ROLE,
+allow:[
+PermissionsBitField.Flags.ViewChannel,
+PermissionsBitField.Flags.SendMessages
+]
+}
+]
+});
+
+const ticketEmbed = new EmbedBuilder()
+.setTitle("🎫 Matcha Ticket")
+.setDescription(`
+Hello ${user}
+
+Ticket Type:
+**${interaction.customId.toUpperCase()}**
 
 Please provide:
 • Full explanation
-• Evidence/screenshots
-• Relevant usernames
+• Evidence
+• Usernames
+`)
+.setColor("#b7f2c2");
 
-A staff member will assist you shortly.`
-    )
-    .setColor("#b7f2c2");
+const controls = new ActionRowBuilder().addComponents(
+new ButtonBuilder()
+.setCustomId("claim")
+.setLabel("Claim")
+.setStyle(ButtonStyle.Primary),
 
-  await ticketChannel.send({
-    content: `${user}`,
-    embeds: [ticketEmbed]
-  });
+new ButtonBuilder()
+.setCustomId("close")
+.setLabel("Close")
+.setStyle(ButtonStyle.Danger)
+);
 
-  await interaction.reply({
-    content: `✅ Your ticket has been created: ${ticketChannel}`,
-    ephemeral: true
-  });
+await channel.send({
+content:`${user} <@&${STAFF_ROLE}>`,
+embeds:[ticketEmbed],
+components:[controls]
+});
+
+await interaction.reply({
+content:`✅ Ticket created: ${channel}`,
+ephemeral:true
+});
+
+});
+
+
+// ================= CLAIM + CLOSE =================
+client.on("interactionCreate", async interaction => {
+
+if (!interaction.isButton()) return;
+
+if (interaction.customId === "claim") {
+
+await interaction.reply(
+`✅ Ticket claimed by ${interaction.user}`
+);
+
+}
+
+if (interaction.customId === "close") {
+
+const messages =
+await interaction.channel.messages.fetch({limit:100});
+
+let transcript =
+messages.reverse().map(m =>
+`${m.author.tag}: ${m.content}`
+).join("\n");
+
+fs.writeFileSync(
+`transcript-${interaction.channel.id}.txt`,
+transcript
+);
+
+const logCategory =
+interaction.guild.channels.cache.find(
+c => c.name === LOG_CATEGORY
+);
+
+const logChannel =
+await interaction.guild.channels.create({
+name:`log-${interaction.channel.name}`,
+type:ChannelType.GuildText,
+parent:logCategory
+});
+
+await logChannel.send({
+content:"📄 Ticket Transcript",
+files:[`transcript-${interaction.channel.id}.txt`]
+});
+
+activeTickets.delete(
+interaction.channel.topic
+);
+
+await interaction.channel.delete();
+
+}
+
 });
 
 
