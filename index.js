@@ -23,52 +23,21 @@ client.once('ready', () => {
   console.log(`✅ Matcha Support is online as ${client.user.tag}`);
 });
 
-// COMMAND TO SEND THE SUPPORT PANEL
+
+// ================= SUPPORT PANEL =================
 client.on('messageCreate', async (message) => {
+
   if (message.content === "!supportpanel") {
 
     const embed = new EmbedBuilder()
       .setTitle("🍵 Matcha Support Center")
       .setDescription(
 `Need some help? We're here for you!
+ Please carefully review the following information before submitting a support ticket.
 
-Please carefully review the following information before submitting a support ticket.
+ Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
 
-Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
-
-Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.`
-      )
-      .addFields(
-        {
-          name: "🌸 General Support",
-          value: "Used for general questions relating to Matcha information, operations, or knowledge."
-        },
-        {
-          name: "💬 Discord Support",
-          value: "Used to report Discord-related issues such as rule violations or misconduct within the server."
-        },
-        {
-          name: "🧁 Report a Low Rank (LR)",
-          value: "Submit reports against Low Rank staff members (Trainee – Kitchen Leader)."
-        },
-        {
-          name: "🧁 Report a Middle Rank / High Rank (MR/HR)",
-          value: "Submit reports against Middle Rank or High Rank staff members (Staff Assistant – Executive Administration). These reports are confidential."
-        },
-        {
-          name: "⚠️ Bakery Assistance",
-          value:
-`Low Response: Trolling, spamming, harassment, standing on counters, point cheating.
-Middle Response: Impersonation, discrimination, exploiting, threats, raids (3+ people)
-High Response: Corporate account compromised, bakery servers down, large raids (15+ people)`
-        },
-        {
-          name: "🌿 Corporate Support",
-          value:
-`Used to file alliance reports, partnership inquiries, or general affiliation concerns with Matcha.
-
-Please provide your organization name, your role, and a clear explanation of your request.`
-        }
+ Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
       )
       .setColor("#b7f2c2")
       .setFooter({ text: "Matcha Support • We’re here to help 💚" });
@@ -78,18 +47,22 @@ Please provide your organization name, your role, and a clear explanation of you
         .setCustomId('general')
         .setLabel('🌸 General Support')
         .setStyle(ButtonStyle.Primary),
+
       new ButtonBuilder()
         .setCustomId('discord')
         .setLabel('💬 Discord Support')
         .setStyle(ButtonStyle.Secondary),
+
       new ButtonBuilder()
         .setCustomId('lr')
         .setLabel('🧁 Report LR')
         .setStyle(ButtonStyle.Danger),
+
       new ButtonBuilder()
         .setCustomId('mrhr')
         .setLabel('🧁 Report MR/HR')
         .setStyle(ButtonStyle.Danger),
+
       new ButtonBuilder()
         .setCustomId('corporate')
         .setLabel('🌿 Corporate')
@@ -98,8 +71,8 @@ Please provide your organization name, your role, and a clear explanation of you
 
     const row2 = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("appeal")
-        .setLabel("📄 Appeals")
+        .setCustomId('appeal')
+        .setLabel('📄 Appeals')
         .setStyle(ButtonStyle.Success)
     );
 
@@ -108,12 +81,10 @@ Please provide your organization name, your role, and a clear explanation of you
       components: [row, row2]
     });
   }
-}); 
-    await message.channel.send({ embeds: [embed], components: [row] });
-    }
 });
 
-// BUTTON HANDLER (CREATES TICKETS)
+
+// ================= TICKET CREATION =================
 client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.isButton()) return;
@@ -147,7 +118,7 @@ client.on("interactionCreate", async (interaction) => {
     .setDescription(
 `Hello ${user},
 
-You opened an **${category.toUpperCase()}** ticket.
+You opened a **${category.toUpperCase()}** ticket.
 
 Please provide:
 • Full explanation
@@ -164,10 +135,11 @@ A staff member will assist you shortly.`
   });
 
   await interaction.reply({
-    content: `✅ Ticket created: ${ticketChannel}`,
+    content: `✅ Your ticket has been created: ${ticketChannel}`,
     ephemeral: true
   });
-}
+});
 
-// LOGIN (PASTE YOUR BOT TOKEN HERE)
+
+// ================= LOGIN =================
 client.login(process.env.TOKEN);
