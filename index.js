@@ -34,12 +34,13 @@ client.on('messageCreate', async (message) => {
       .setDescription(
 `Need some help? We're here for you!
 
-Please carefully review the following information before submitting a support ticket. 
+Please carefully review the following information before submitting a support ticket.
 
 Only create a ticket if you intend to fully cooperate throughout the support process. Remain polite and professional when communicating with the Support Team — we are here to help you.
 
-Once you select a category and open a ticket, a member of our team will respond as soon as possible. Please be prepared to provide information and evidence.
+Once you select a category and open a ticket, a member of our team will respond as soon as possible.
 
+Please be prepared to provide information and evidence.`
       )
       .setColor("#b7f2c2")
       .setFooter({ text: "Matcha Support • We’re here to help 💚" });
@@ -91,14 +92,24 @@ client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.isButton()) return;
 
-  const category = interaction.customId;
   const user = interaction.user;
   const guild = interaction.guild;
+  const category = interaction.customId;
 
-  const channelName = `ticket-${user.username}`.toLowerCase();
+  // ✅ Prevent duplicate tickets
+  const existing = guild.channels.cache.find(
+    c => c.name === `ticket-${user.username.toLowerCase()}`
+  );
+
+  if (existing) {
+    return interaction.reply({
+      content: `⚠️ You already have an open ticket: ${existing}`,
+      ephemeral: true
+    });
+  }
 
   const ticketChannel = await guild.channels.create({
-    name: channelName,
+    name: `ticket-${user.username}`,
     type: ChannelType.GuildText,
     permissionOverwrites: [
       {
@@ -124,7 +135,7 @@ You opened a **${category.toUpperCase()}** ticket.
 
 Please provide:
 • Full explanation
-• Evidence/screenshots
+• Evidence / screenshots
 • Relevant usernames
 
 A staff member will assist you shortly.`
