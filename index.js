@@ -36,11 +36,8 @@ const embed = new EmbedBuilder()
 .setDescription(`
 Need some help? We're here!
 
-Please read the following information before submitting a support ticket.
-
-Only create tickets if you intend to cooperate fully with staff. Remain respectful while communicating with the Matcha Support Team.
-
-Once you select a category and create a ticket, a staff member will assist you shortly.
+Please read the following information before submitting a support ticket. Only create tickets if you intend to cooperate fully with staff. Remain respectful while communicating with the Matcha Support Team.
+Once you select a category and create a ticket, a staff member will assist you shortly. Please be prepared to provide information and evidence. Abuse of tickets may result in punishment.
 `)
 .setColor("#b7f2c2");
 
