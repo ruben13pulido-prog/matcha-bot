@@ -151,4 +151,4 @@ Remain respectful while communicating with staff.`
 });
 
 // LOGIN (PASTE YOUR BOT TOKEN HERE)
-client.login("PASTE_YOUR_BOT_TOKEN_HERE");
+client.login(process.env.TOKEN);
