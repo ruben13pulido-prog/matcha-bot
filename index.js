@@ -41,7 +41,7 @@ Please read the following information before submitting a support ticket.
 Only create tickets if you intend to cooperate fully with staff. Remain respectful while communicating with the Matcha Support Team.
 
 Once you select a category and create a ticket, a staff member will assist you shortly.
-Abuse of tickets may result in punishment.`
+Abuse of tickets may result in punishment.
 `)
 .setColor("#b7f2c2");
 
