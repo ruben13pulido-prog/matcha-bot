@@ -1,5 +1,12 @@
 require('dotenv').config();
 
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) >= {
+  res.send('Bot is alive!');
+};
+
 const {
 Client,
 GatewayIntentBits,
@@ -63,7 +70,7 @@ Questions relating to Matcha information and knowledge.
 Report rule violations or Discord-related issues.
 
 <:Mcupcake:1475669775865876583> **Report an LR**
-Submit reports against Low Rank staff members. This category is used to make a report against a (MatchaApprentice-BakerySupervisor).
+Submit reports against Low Rank staff members. This category is used to make a report against a (MatchaApprentice-Chef).
 
 <:Mcupcake:1475669775865876583> **Report MR/HR**
 Submit reports against Middle/High Rank staff members. This category is used to make a report against a Middle Rank or High Rank (Intern-HeadOfOperations)
