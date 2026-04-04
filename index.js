@@ -142,7 +142,7 @@ const guild = interaction.guild;
 const category = interaction.customId;
 
 const existing = guild.channels.cache.find(
-c => c.name === `ticket-${user.id}`
+name: `ticket-${user.id}`
 );
 
 if (existing)
