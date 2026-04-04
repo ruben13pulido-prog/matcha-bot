@@ -1,10 +1,26 @@
-- name: Run bot loop
-  run: |
-    while true
-    do
-      node index.js
-      echo "Restarting bot..."
-      sleep 5
-    done
-  env:
-    TOKEN: ${{ secrets.TOKEN }}
+name: Run Bot 24/7
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run bot
+        run: node index.js
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
