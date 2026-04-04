@@ -1,1 +1,10 @@
-
+- name: Run bot loop
+  run: |
+    while true
+    do
+      node index.js
+      echo "Restarting bot..."
+      sleep 5
+    done
+  env:
+    TOKEN: ${{ secrets.TOKEN }}
